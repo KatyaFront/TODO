@@ -70,13 +70,9 @@
         };
     }
 
-    // обработчик событий для загрузки дом-дерева
-    document.addEventListener('DOMContentLoaded', function() {
-        // получаем div из html-документа
-        let container = document.getElementById('todo-app');
-
+    function createTodoApp(container, title = 'Список дел') {
         // вызываем вышенаписанные функции, присваивая их в переменные
-        let todoAppTitle = createAppTitle('Список дел');
+        let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
         let todoList = createTodoList();
         
@@ -112,7 +108,13 @@
 
             // обнуляем значение в поле, чтобы не пришлось стирать его вречную
             todoItemForm.input.value = '';            
-        });
+        });    
+    } 
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        createTodoApp(document.getElementById('my-todos'), 'Мои дела');
+        createTodoApp(document.getElementById('mom-todos'), 'Дела для мамы');
+        createTodoApp(document.getElementById('dad-todos'), 'Дела для папы');
     });
 })();
 
