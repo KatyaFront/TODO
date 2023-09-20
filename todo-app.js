@@ -109,12 +109,9 @@
             // обнуляем значение в поле, чтобы не пришлось стирать его вречную
             todoItemForm.input.value = '';            
         });    
-    } 
-    
-    document.addEventListener('DOMContentLoaded', function () {
-        createTodoApp(document.getElementById('my-todos'), 'Мои дела');
-        createTodoApp(document.getElementById('mom-todos'), 'Дела для мамы');
-        createTodoApp(document.getElementById('dad-todos'), 'Дела для папы');
-    });
+    }
+
+    // присваиваем функцию createTodoApp в глобальную область видимости
+    window.createTodoApp = createTodoApp;    
 })();
 
