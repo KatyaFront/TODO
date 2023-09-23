@@ -18,9 +18,19 @@
         input.classList.add('form-control');
         input.placeholder = 'Введите название нового дела';
         buttonWrapper.classList.add('input-group-append');
-        button.classList.add('btn', 'btn-primary');
+        button.classList.add('btn', 'btn-secondary');
+        button.setAttribute('disabled', 'true');
         button.textContent = 'Добавить дело';
 
+        // делаем кнопку отправки формы активной при введении текста в поле для ввода
+        input.addEventListener('input', function() {            
+            if (input.value.length > 0) {
+                button.removeAttribute('disabled', 'true');               
+                button.classList.remove('btn-secondary');
+                button.classList.add('btn-primary');  
+            }  
+        }); 
+     
         buttonWrapper.append(button);
         form.append(input);
         form.append(buttonWrapper);
@@ -48,7 +58,7 @@
         let deleteButton = document.createElement('button');
 
         // устанавливаем стили для элемента списка, а также для размещения кнопок в его правой чатси с помощью flex
-        item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'algin-items-center');
+        item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
         item.textContent = name;
 
         buttonGroup.classList.add('btn-group', 'btn-group-sm');
@@ -87,7 +97,7 @@
             e.preventDefault();
 
             // игнорируем создание элемента, если пользователь ничего не ввёл в поле
-            if (!todoItemForm.input.value) {
+            if (!todoItemForm.input.value) {                
                 return;
             }
 
@@ -107,7 +117,12 @@
             todoList.append(todoItem.item);
 
             // обнуляем значение в поле, чтобы не пришлось стирать его вречную
-            todoItemForm.input.value = '';            
+            todoItemForm.input.value = '';
+
+            // делаем кнопку отправки формы неактивной после отправки формы и очищения поля для ввода
+            todoItemForm.button.setAttribute('disabled', 'true'); 
+            todoItemForm.button.classList.remove('btn-primary');
+            todoItemForm.button.classList.add('btn-secondary');            
         });    
     }
 
