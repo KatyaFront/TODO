@@ -6,7 +6,7 @@
         return appTitle;
     }
 
-    // сщздаём и возвращаем форму для создания дела
+    // создаём и возвращаем форму для создания дела
     function createTodoItemForm() {
         let form = document.createElement('form');
         let input = document.createElement('input');
@@ -25,12 +25,16 @@
         // делаем кнопку отправки формы активной при введении текста в поле для ввода
         input.addEventListener('input', function() {            
             if (input.value.length > 0) {
-                button.removeAttribute('disabled', 'true');               
+                button.removeAttribute('disabled');               
                 button.classList.remove('btn-secondary');
                 button.classList.add('btn-primary');  
-            }  
-        }); 
-     
+            }  else {
+                button.setAttribute('disabled', 'true');               
+                button.classList.add('btn-secondary');
+                button.classList.remove('btn-primary');  
+            }
+        });
+
         buttonWrapper.append(button);
         form.append(input);
         form.append(buttonWrapper);
@@ -117,7 +121,7 @@
             todoList.append(todoItem.item);
 
             // обнуляем значение в поле, чтобы не пришлось стирать его вречную
-            todoItemForm.input.value = '';
+            todoItemForm.input.value = '';            
 
             // делаем кнопку отправки формы неактивной после отправки формы и очищения поля для ввода
             todoItemForm.button.setAttribute('disabled', 'true'); 
