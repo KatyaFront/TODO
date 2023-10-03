@@ -1,8 +1,19 @@
 // создаём массив с готовыми делами
 let arrCases = [
-    {name: 'Купить хлеб', done: true},
-    {name: 'Починить машину', done: false},
+    {name: 'Купить хлеб', done: true},    
     {name: 'Сходить на тренировку', done: false},
+];
+
+// создаём массив с готовыми делами
+let arrCasesDad = [    
+    {name: 'Починить машину', done: false},    
+];
+
+// создаём массив с готовыми делами
+let arrCasesMom = [
+    {name: 'Купить молоко', done: true},
+    {name: 'Приготовить ужин', done: false},
+    {name: 'Поспать', done: true},
 ];
 
 (function() {
@@ -94,9 +105,9 @@ let arrCases = [
             doneButton,
             deleteButton,
         };
-    }
+    }    
 
-    function createTodoApp(container, title = 'Список дел', arr) {
+    function createTodoApp(container, title = 'Список дел', arr, keyTodoList) {        
         // вызываем вышенаписанные функции, присваивая их в переменные
         let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
@@ -107,16 +118,13 @@ let arrCases = [
         container.append(todoItemForm.form);
         container.append(todoList);
 
-        // отрисовкa списка текущих задач
-        // todoList.innerHTML = '';
-
         // отрисовкa списка текущих задач из массива
         for (let i = 0; i < arr.length; i++) {
             let todoCurrentItem = createTodoItem(arr[i].name);
 
             // добавляем обработчики на кнопки
             todoCurrentItem.doneButton.addEventListener('click', function() {
-                todoCurrentItem.item.classList.toggle('list-group-item-success');                
+                todoCurrentItem.item.classList.toggle('list-group-item-success');                 
             });
             todoCurrentItem.deleteButton.addEventListener('click', function() {
                 if (confirm('Вы уверены?')) { // функция confirm встроена в браузер и вернет true, в случае, если человек нажмет ДА на диалоге выбора
@@ -131,16 +139,19 @@ let arrCases = [
             
             // создаём и добавляем в список новое дело с названием из массива        
             todoList.append(todoCurrentItem.item);
-        }
+        }       
+
+        // отрисовкa списка текущих задач
+        todoList.innerHTML = '';
         
         // проверяем, есть ли данные в localStorage
-        let storedData = localStorage.getItem('todoList');
+        let storedData = localStorage.getItem(keyTodoList);
         let todoListData = storedData ? JSON.parse(storedData) : arr;
 
         // функция для обновления данных в localStorage
         function updatelocalStorage(data) {
-            localStorage.setItem('todoList', JSON.stringify(data));            
-        }
+            localStorage.setItem(keyTodoList, JSON.stringify(data));        
+        }        
 
         // Регистрируем событие submit у формы, это событие свойственно только элементу формы. Браузер создаёт событие submit на форме по нажатию на enter или на кнопку создания дела, т.е. можно, либо нажать кнопку отправки формы, либо нажать enter, и дело добавится и в том и в другом случае
         todoItemForm.form.addEventListener('submit', function(e) {
@@ -152,25 +163,38 @@ let arrCases = [
                 return;
             }
 
-            let todoItem = createTodoItem(todoItemForm.input.value);
+            let todoItem = createTodoItem(todoItemForm.input.value);            
+
+            // добавляем новое дело к текущим данным и обновляем localStorage
+            let taskName = todoItemForm.input.value
+            todoListData.push({ name: taskName, done: false });
+            updatelocalStorage(todoListData);
 
             // добавляем обработчики на кнопки
             todoItem.doneButton.addEventListener('click', function() {
-                todoItem.item.classList.toggle('list-group-item-success');                
+                todoItem.item.classList.toggle('list-group-item-success');
+                // находим элемент в данных и обновляем его статус
+                let index = todoListData.findIndex(item => item.name === taskName); // todoItemForm.input.value
+                if (index !== -1) {
+                    todoListData[index].done = !todoListData[index].done;
+                    updatelocalStorage(todoListData);
+                }                               
             });
 
             todoItem.deleteButton.addEventListener('click', function() {
                 if (confirm('Вы уверены?')) { // функция confirm встроена в браузер и вернет true, в случае, если человек нажмет ДА на диалоге выбора
-                    todoItem.item.remove();                    
+                    todoItem.item.remove();
+                    // удаляем элемент из данных и обновляем localStorage
+                    let index = todoListData.findIndex(item => item.name === taskName); // todoItemForm.input.value
+                    if (index !== -1) {
+                        todoListData.splice(index, 1);
+                        updatelocalStorage(todoListData);
+                    }                    
                 }
-            });
-
+            });  
+            
             // создаём и добавляем в список новое дело с названием из поля для ввода
             todoList.append(todoItem.item);
-
-            // добавляем новое дело к текущим данным и обновляем localStorage
-            todoListData.push({ name: todoItemForm.input.value, done: false });
-            updatelocalStorage(todoListData);
 
             // обнуляем значение в поле, чтобы не пришлось стирать его вречную
             todoItemForm.input.value = '';            
@@ -179,16 +203,13 @@ let arrCases = [
             todoItemForm.button.setAttribute('disabled', 'true'); 
             todoItemForm.button.classList.remove('btn-primary');
             todoItemForm.button.classList.add('btn-secondary');            
-        });        
+        });           
 
-        // обнуляем список
-        todoList.innerHTML = '';
-        
         // восстанавливаем список дел при загрузке
         todoListData.forEach(function(itemData) {
             let todoCurrentItem = createTodoItem(itemData.name, itemData.done);
-            // создаем и добавляем в список новое дело
-            todoList.append(todoCurrentItem.item);    
+            // создаем и добавляем в список новое дело            
+            todoList.append(todoCurrentItem.item);  
             
             // обновляем список дел при изменении состояния дела (готово или нет) и сохраняем в localStorage
             todoCurrentItem.doneButton.addEventListener('click', function() {
@@ -205,7 +226,6 @@ let arrCases = [
             todoCurrentItem.deleteButton.addEventListener('click', function() {
                 if (confirm('Вы уверены?')) {
                     todoCurrentItem.item.remove();
-
                     // удаляем элемент из данных и обновляем localStorage
                     let index = todoListData.findIndex(item => item.name === itemData.name); // todoItemForm.input.value
                     if (index !== -1) {
@@ -213,8 +233,8 @@ let arrCases = [
                         updatelocalStorage(todoListData);
                     }
                 }
-            });
-        });        
+            });            
+        });      
     }
 
     // присваиваем функцию createTodoApp в глобальную область видимости
