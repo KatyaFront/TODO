@@ -1,17 +1,17 @@
-(function() {
+(() => {    
     // создаём и возвращаем заголовок приложения
     function createAppTitle(title) {
-        let appTitle = document.createElement('h2');
+        const appTitle = document.createElement('h2');
         appTitle.innerHTML = title;
         return appTitle;
-    }
+    };
 
     // создаём и возвращаем форму для создания дела
     function createTodoItemForm() {
-        let form = document.createElement('form');
-        let input = document.createElement('input');
-        let buttonWrapper = document.createElement('div');
-        let button = document.createElement('button');
+        const form = document.createElement('form');
+        const input = document.createElement('input');
+        const buttonWrapper = document.createElement('div');
+        const button = document.createElement('button');
 
         // стили заданы в bootstrap
         form.classList.add('input-group', 'mb-3');
@@ -28,12 +28,11 @@
                 button.removeAttribute('disabled');               
                 button.classList.remove('btn-secondary');
                 button.classList.add('btn-primary');
-            }  
-            // }  else {
-            //     button.setAttribute('disabled', 'true');               
-            //     button.classList.add('btn-secondary');
-            //     button.classList.remove('btn-primary');  
-            // }
+            }  else {
+                    button.setAttribute('disabled', 'true');               
+                    button.classList.add('btn-secondary');
+                    button.classList.remove('btn-primary');  
+                };
         });
 
         buttonWrapper.append(button);
@@ -45,23 +44,23 @@
             input,
             button,
         };
-    }
+    };
 
     // создаём и возвращаем список элементов
     function createTodoList() {
-        let list = document.createElement('ul');
+        const list = document.createElement('ul');
         list.classList.add('list-group');
         return list;
-    }
+    };
 
     // создаём функцию, которая создаст дом-элемент с делом. В него нам нужно поместить название дела, кнопку для завершения дела и кнопку для удаления дела
     function createTodoItemElement(todoItem, { onDone, onDelete }) {
         const doneClass = 'list-group-item-success';
-        let item = document.createElement('li');
+        const item = document.createElement('li');
         // кнопки помещаем в контейнер для стилизации
-        let buttonGroup = document.createElement('div');
-        let doneButton = document.createElement('button');
-        let deleteButton = document.createElement('button');
+        const buttonGroup = document.createElement('div');
+        const doneButton = document.createElement('button');
+        const deleteButton = document.createElement('button');
 
         // устанавливаем стили для элемента списка, а также для размещения кнопок в его правой чатси с помощью flex
         item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');        
@@ -77,11 +76,11 @@
         deleteButton.textContent = 'Удалить';
 
         // добавляем обработчики на кнопки
-        doneButton.addEventListener('click', function() {
+        doneButton.addEventListener('click', () => {
             onDone({ todoItem, element: item });
             item.classList.toggle(doneClass, todoItem.done); // еслит мы в toggle передаем второй параметр, то класс будет переключаться в зависимости от значения этого булевого параметра, т.е., если параметр равен true, то класс точно применится и наоборот
         });
-        deleteButton.addEventListener('click', function() {
+        deleteButton.addEventListener('click', () => {
             onDelete({ todoItem, element: item });            
         });
 
@@ -89,9 +88,9 @@
         buttonGroup.append(doneButton);
         buttonGroup.append(deleteButton);
         item.append(buttonGroup);
-        
+            
         return item;
-    }
+    };
 
     async function createTodoApp(container, title, owner) {
         // вызываем вышенаписанные функции, присваивая их в переменные
@@ -112,7 +111,7 @@
             onDelete({ todoItem, element }) {
                 if (!confirm('Вы уверены?')) {
                     return
-                }
+                };
                 element.remove();
                 fetch(`http://localhost:3000/api/todos/${todoItem.id}`, {
                     method: 'DELETE',                    
@@ -124,7 +123,7 @@
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
         container.append(todoList);
-        
+            
         // Отправляем серверу запрос на список всех дел
         const response = await fetch(`http://localhost:3000/api/todos?owner=${owner}`);
         const todoItemList = await response.json();
@@ -135,14 +134,14 @@
         });
 
         // Регистрируем событие submit у формы, это событие свойственно только элементу формы. Браузер создаёт событие submit на форме по нажатию на enter или на кнопку создания дела, т.е. можно, либо нажать кнопку отправки формы, либо нажать enter, и дело добавится и в том и в другом случае
-        todoItemForm.form.addEventListener('submit', async function(e) {
+        todoItemForm.form.addEventListener('submit', async (e) => {
             // эта строчка необходима, чтобы предотвратить стандартное действие браузера. В данном случае, мы не хотим, чтобы страница перезагружалась при отправке формы, если не написать эту строчку, страница будет перезагружаться при отправке формы - это стандартное поведение
             e.preventDefault();
 
             // игнорируем создание элемента, если пользователь ничего не ввёл в поле
             if (!todoItemForm.input.value) {                
                 return;
-            }
+            };
 
             // Делаем запрос к серверу на добавление нового дела
             const response = await fetch('http://localhost:3000/api/todos', {
@@ -158,7 +157,7 @@
 
             const todoItem = await response.json();
 
-            let todoItemElement = createTodoItemElement(todoItem, handlers);            
+            const todoItemElement = createTodoItemElement(todoItem, handlers);            
 
             // создаём и добавляем в список новое дело с названием из поля для ввода
             todoList.append(todoItemElement);
@@ -171,8 +170,8 @@
             todoItemForm.button.classList.remove('btn-primary');
             todoItemForm.button.classList.add('btn-secondary');            
         });    
-    }
-
+    };       
+     
     // присваиваем функцию createTodoApp в глобальную область видимости
     window.createTodoApp = createTodoApp;    
 })();
